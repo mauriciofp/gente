@@ -2,7 +2,10 @@
     <ion-content>
         <ion-list>
             <ion-item class="item-avatar" ng-repeat="persona in gente">
-            </ion-item>
+                <img ng-src="{{persona.picture.thumbnail}}">
+                <h2>{{persona.name.first}}</h2>
+                <p>{{persona.email}}</p>
+                </ion-item>
         </ion-list>
     </ion-content>
 </ion-view>

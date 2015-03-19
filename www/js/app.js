@@ -27,8 +27,26 @@ angular.module('starter', ['ionic'])
     $urlRouterProvider.otherwise('/gente');
 })
 
-.controller('GenteCtrl', function($scope){
+.controller('GenteCtrl', function($scope, gente){
+    $scope.gente = gente.list;
 
+})
 
+.factory('gente', function($http, $q){
+    var gente = {};
+    var n=0;
+    gente.list = [];
+    gente.add = function(){
+       return $http.get('http://api.randomuser.me?q=' + (n++)).then(function(response) {
+           gente.list.push(response.data.results[0].user);
+       });
+    };
+    
+    gente.ready = $q.all([
+    gente.add(),
+    gente.add(),
+    gente.add()
+        ]);
+    return gente;
 });
 

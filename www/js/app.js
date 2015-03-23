@@ -23,13 +23,55 @@ angular.module('starter', ['ionic'])
         url: '/gente',
         controller: 'GenteCtrl',
         templateUrl: 'templates/gente.html'
-        });    
+        })
+    
+    $stateProvider.state('persona', {
+        url: '/persona/:index',
+        controller: 'PersonaCtrl',
+        templateUrl: 'templates/persona.html',
+        resolve: {
+            persona: function($stateParams, gente){
+                return gente.ready.then(function(){
+                    return gente.list[+$stateParams.index]
+                    });
+                }
+            }
+        });   
+    
     $urlRouterProvider.otherwise('/gente');
 })
 
-.controller('GenteCtrl', function($scope, gente){
+.controller('GenteCtrl', function($scope, gente, $ionicLoading){
     $scope.gente = gente.list;
+    
+    $scope.addPersona = function(){
+        gente.add().then(function(){
+            $scope.$broadcast('scroll.refreshComplete');
+        });
+    };
+    
+    $ionicLoading.show({
+        template: '<i class="ion-load-c"></i><br/>Cargando...'
+    });
+    gente.ready.then(function(){
+        $ionicLoading.hide();
+    });
 
+})
+
+.controller('PersonaCtrl', function($scope, persona, gente, $ionicActionSheet){
+    $scope.persona = persona;
+    
+    $scope.borrarPersona = function(){
+    $ionicActionSheet.show({
+        destructiveText: 'Delete ' + persona.name.first,
+        cancelText: 'Cancel',
+        destructiveButtonClicked: function(){
+            gente.list.splice(gente.list.indexOf(persona),1);
+            window.history.back();   
+        }
+    });
+    };
 })
 
 .factory('gente', function($http, $q){
